@@ -1,0 +1,14 @@
+# Safe baseline: transfer happens before the epoch advances, so the child lock
+# preserves the original redemption index.
+network example-safe
+account 1 alice 2000
+account 2 bob 500
+vault 7 hxSOL 1.000000
+deposit 1 7 1000
+lock 1 7 500
+transfer-lock 1 2 1 200
+advance 7
+redeem 2 2 200
+settle 7
+withdraw 2 1
+snapshot

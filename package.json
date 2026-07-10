@@ -1,0 +1,22 @@
+{
+  "name": "helix-dtl",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CTF de vault shares DTL en C con tests JavaScript.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/node/*.test.js",
+    "test:js": "node --test tests/node/*.test.js",
+    "check:js": "node scripts/check-js.mjs",
+    "fmt": "prettier --write --config .prettierrc --ignore-path .prettierignore \"tests/**/*.js\" \"scripts/**/*.mjs\"",
+    "fmt:check": "prettier --check --config .prettierrc --ignore-path .prettierignore \"tests/**/*.js\" \"scripts/**/*.mjs\"",
+    "ci": "node scripts/build.mjs && node scripts/check-js.mjs && node --test tests/node/*.test.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
