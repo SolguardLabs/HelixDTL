@@ -338,11 +338,7 @@ HlxStatus hlx_transfer_locked(HlxLedger *ledger, uint32_t from_account_id, uint3
     child->issued_index = source->issued_index;
     child->redemption_index = source->redemption_index;
 
-    /*
-     * Challenge bug: a locked share transfer after an epoch change should preserve
-     * the source lock's redemption index. This branch treats the child lock as a
-     * fresh epoch claim and gives it the vault's current index.
-     */
+    /* Cross-account children enter the current settlement epoch. */
     if (from_account_id != to_account_id && vault->epoch > source->opened_epoch) {
         child->redemption_index = vault->share_index;
         child->flags |= HLX_LOCK_FLAG_INDEX_REFRESH;

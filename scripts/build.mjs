@@ -5,20 +5,32 @@ import { spawnSync } from "node:child_process";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const isWindows = process.platform === "win32";
-const exe = isWindows ? "helixdtl.exe" : "helixdtl";
+const riskTest = process.argv.includes("--risk-test");
+const exe = isWindows
+    ? riskTest
+        ? "helix-risk-test.exe"
+        : "helixdtl.exe"
+    : riskTest
+      ? "helix-risk-test"
+      : "helixdtl";
 const outDir = join(root, "build");
 const output = join(outDir, exe);
-const sources = [
-    "src/amount.c",
-    "src/codec.c",
-    "src/invariants.c",
-    "src/ledger.c",
-    "src/query.c",
-    "src/quote.c",
-    "src/script.c",
-    "src/scenarios.c",
-    "src/main.c",
-].map((file) => join(root, file));
+const sources = (
+    riskTest
+        ? ["src/amount.c", "src/risk.c", "tests/c/risk_model_test.c"]
+        : [
+              "src/amount.c",
+              "src/codec.c",
+              "src/invariants.c",
+              "src/ledger.c",
+              "src/query.c",
+              "src/quote.c",
+              "src/risk.c",
+              "src/script.c",
+              "src/scenarios.c",
+              "src/main.c",
+          ]
+).map((file) => join(root, file));
 
 function tryCompiler(command) {
     const probe = spawnSync(command, command === "cl" ? [] : ["--version"], {
@@ -89,7 +101,11 @@ function findVsDevCmd() {
 }
 
 function relaunchWithVsDevCmd(vsDevCmd) {
-    const commandLine = `call "${vsDevCmd}" -arch=x64 >nul && "${process.execPath}" "${fileURLToPath(import.meta.url)}"`;
+    const forwarded = process.argv
+        .slice(2)
+        .map((value) => `"${value.replaceAll('"', '\\"')}"`)
+        .join(" ");
+    const commandLine = `call "${vsDevCmd}" -arch=x64 >nul && "${process.execPath}" "${fileURLToPath(import.meta.url)}" ${forwarded}`;
     const result = spawnSync(commandLine, {
         cwd: root,
         encoding: "utf8",

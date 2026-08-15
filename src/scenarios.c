@@ -140,26 +140,6 @@ static HlxStatus scenario_transfer(HlxLedger *ledger) {
     return HLX_OK;
 }
 
-static HlxStatus scenario_drift(HlxLedger *ledger) {
-    uint64_t minted = 0;
-    uint32_t alice_lock = 0;
-    uint32_t bob_lock = 0;
-    uint32_t redemption_id = 0;
-
-    hlx_ledger_init(ledger, "helix-drift");
-    TRY_LEDGER(hlx_add_account(ledger, 1, "alice", 2000));
-    TRY_LEDGER(hlx_add_account(ledger, 2, "bob", 100));
-    TRY_LEDGER(hlx_add_vault(ledger, 7, "hxSOL", one()));
-    TRY_LEDGER(hlx_deposit(ledger, 1, 7, 1000, &minted));
-    TRY_LEDGER(hlx_lock_shares(ledger, 1, 7, 800, &alice_lock));
-    TRY_LEDGER(hlx_revalue_vault(ledger, 7, index_lit("1.500000")));
-    TRY_LEDGER(hlx_transfer_locked(ledger, 1, 2, alice_lock, 800, &bob_lock));
-    TRY_LEDGER(hlx_request_redemption(ledger, 2, bob_lock, 800, &redemption_id));
-    TRY_LEDGER(hlx_settle_epoch(ledger, 7));
-    TRY_LEDGER(hlx_withdraw_redemption(ledger, 2, redemption_id));
-    return HLX_OK;
-}
-
 typedef HlxStatus (*ScenarioFn)(HlxLedger *ledger);
 
 typedef struct ScenarioEntry {
@@ -174,7 +154,6 @@ static const ScenarioEntry SCENARIOS[] = {
     {"partial", scenario_partial},
     {"transfer", scenario_transfer},
     {"snapshot", scenario_snapshot},
-    {"drift", scenario_drift},
 };
 
 HlxStatus hlx_run_scenario(const char *name, FILE *out) {
