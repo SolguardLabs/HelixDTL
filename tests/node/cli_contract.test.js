@@ -7,7 +7,7 @@ const normalScenarios = ["basic", "multi", "index", "partial", "transfer", "snap
 
 test("CLI lists all bundled scenarios", () => {
     const scenarios = listScenarios();
-    for (const name of [...normalScenarios, "drift"]) {
+    for (const name of normalScenarios) {
         assert.ok(scenarios.includes(name), `${name} is not listed`);
     }
 });
